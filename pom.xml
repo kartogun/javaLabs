@@ -6,11 +6,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ua.edu.sumdu</groupId>
-    <artifactId>java-labs</artifactId>
+    <artifactId>javaLabs</artifactId>
     <version>1.0</version>
 
     <properties>
         <maven.compiler.source>26</maven.compiler.source>
         <maven.compiler.target>26</maven.compiler.target>
     </properties>
+
 </project>
