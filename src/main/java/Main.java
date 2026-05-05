@@ -4,7 +4,7 @@ import java.util.Scanner;
 /**
  * Драйвер-клас з консольним меню. Демонстрація поліморфізму.
  *
- * @author Студент
+ * @author Lobanov
  * @version 4.0
  */
 public class Main {
