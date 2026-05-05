@@ -5,7 +5,7 @@ import java.util.Scanner;
  * Драйвер-клас з консольним меню. Демонстрація поліморфізму.
  *
  * @author Lobanov
- * @version 4.0
+ * @version 5.0
  */
 public class Main {
     private static ArrayList<Clothes> clothesList = new ArrayList<>();
@@ -14,35 +14,50 @@ public class Main {
     public static void main(String[] args) {
         while (true) {
             System.out.println("\n=== МЕНЮ ===");
-            System.out.println("1. Створити одяг (базовий)");
-            System.out.println("2. Створити штани");
-            System.out.println("3. Створити сорочку");
-            System.out.println("4. Вивести всі об'єкти");
-            System.out.println("5. Завершити роботу");
+            System.out.println("1. Створити новий об'єкт");
+            System.out.println("2. Вивести всі об'єкти");
+            System.out.println("3. Завершити роботу");
             System.out.print("Виберiть опцiю: ");
 
             int choice = readInt();
 
             switch (choice) {
                 case 1:
-                    createClothes();
+                    createObjectMenu();
                     break;
                 case 2:
-                    createPants();
-                    break;
-                case 3:
-                    createShirts();
-                    break;
-                case 4:
                     printAllObjects();
                     break;
-                case 5:
+                case 3:
                     System.out.println("До побачення!");
                     scanner.close();
                     return;
                 default:
                     System.out.println("Некоректний вибiр.");
             }
+        }
+    }
+
+    private static void createObjectMenu() {
+        System.out.println("\n--- Виберiть тип об'єкта ---");
+        System.out.println("1. Одяг (базовий)");
+        System.out.println("2. Штани");
+        System.out.println("3. Сорочка");
+        System.out.println("4. Куртка");
+        System.out.println("5. Взуття");
+        System.out.println("0. Повернутися до меню");
+        System.out.print("Ваш вибiр: ");
+
+        int type = readInt();
+
+        switch (type) {
+            case 1: createClothes(); break;
+            case 2: createPants(); break;
+            case 3: createShirts(); break;
+            case 4: createJacket(); break;
+            case 5: createShoes(); break;
+            case 0: return;
+            default: System.out.println("Некоректний вибiр.");
         }
     }
 
@@ -86,6 +101,16 @@ public class Main {
             } catch (NumberFormatException e) {
                 System.out.println("Введiть коректне цiле число!");
             }
+        }
+    }
+
+    private static boolean readBoolean(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (так/ні): ");
+            String input = scanner.nextLine().toLowerCase();
+            if (input.equals("так")) return true;
+            if (input.equals("ні")) return false;
+            System.out.println("Введiть 'так' або 'ні'");
         }
     }
 
@@ -144,6 +169,42 @@ public class Main {
 
         try {
             clothesList.add(new Shirts(name, size, price, quantity, material, sleeve));
+            System.out.println("Створено!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
+        }
+    }
+
+    private static void createJacket() {
+        System.out.println("\n--- Створення куртки ---");
+        String name = readString("Назва: ");
+        String size = readSize();
+        double price = readDouble("Цiна: ");
+        int quantity = readInt("Кiлькiсть: ");
+        String material = readString("Матерiал: ");
+        String season = readString("Сезон (зимова/осіння/літня): ");
+        boolean hasHood = readBoolean("Капюшон");
+
+        try {
+            clothesList.add(new Jacket(name, size, price, quantity, material, season, hasHood));
+            System.out.println("Створено!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
+        }
+    }
+
+    private static void createShoes() {
+        System.out.println("\n--- Створення взуття ---");
+        String name = readString("Назва: ");
+        String size = readSize();
+        double price = readDouble("Цiна: ");
+        int quantity = readInt("Кiлькiсть: ");
+        String material = readString("Матерiал: ");
+        int shoeSize = readInt("Розмiр взуття (36-46): ");
+        String shoeType = readString("Тип (кросівки/черевики/туфлі): ");
+
+        try {
+            clothesList.add(new Shoes(name, size, price, quantity, material, shoeSize, shoeType));
             System.out.println("Створено!");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка: " + e.getMessage());
