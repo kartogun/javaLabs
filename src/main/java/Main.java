@@ -1,17 +1,22 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Драйвер-клас з консольним меню. Демонстрація поліморфізму.
+ * Драйвер-клас з консольним меню та роботою з файлами.
  *
  * @author Lobanov
- * @version 5.0
+ * @version 6.0
  */
 public class Main {
     private static ArrayList<Clothes> clothesList = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
+    private static final String FILE_NAME = "input.txt";
 
     public static void main(String[] args) {
+        // Завантаження даних з файлу при запуску
+        loadFromFile();
+
         while (true) {
             System.out.println("\n=== МЕНЮ ===");
             System.out.println("1. Створити новий об'єкт");
@@ -29,6 +34,8 @@ public class Main {
                     printAllObjects();
                     break;
                 case 3:
+                    saveToFile();
+                    System.out.println("Дані збережено у файл " + FILE_NAME);
                     System.out.println("До побачення!");
                     scanner.close();
                     return;
@@ -37,6 +44,114 @@ public class Main {
             }
         }
     }
+
+    // ========== РОБОТА З ФАЙЛОМ ==========
+
+    private static void loadFromFile() {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            System.out.println("Файл " + FILE_NAME + " не знайдено. Починаємо з порожнім списком.");
+            return;
+        }
+
+        try (Scanner fileScanner = new Scanner(file)) {
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                if (line.trim().isEmpty()) continue;
+
+                Clothes obj = parseObject(line);
+                if (obj != null) {
+                    clothesList.add(obj);
+                }
+            }
+            System.out.println("Завантажено " + clothesList.size() + " об'єкт(ів) з файлу " + FILE_NAME);
+        } catch (FileNotFoundException e) {
+            System.out.println("Помилка: файл не знайдено");
+        } catch (Exception e) {
+            System.out.println("Помилка читання файлу: " + e.getMessage());
+        }
+    }
+
+    private static void saveToFile() {
+        try (PrintWriter writer = new PrintWriter(FILE_NAME)) {
+            for (Clothes item : clothesList) {
+                writer.println(objectToString(item));
+            }
+            System.out.println("Збережено " + clothesList.size() + " об'єкт(ів) у файл " + FILE_NAME);
+        } catch (FileNotFoundException e) {
+            System.out.println("Помилка запису у файл: " + e.getMessage());
+        }
+    }
+
+    private static String objectToString(Clothes obj) {
+        // Формат: Тип|Назва|Розмір|Ціна|Кількість|Матеріал|...(додаткові поля)
+        if (obj instanceof Pants) {
+            Pants p = (Pants) obj;
+            return "Pants|" + p.getName() + "|" + p.getSize() + "|" + p.getPrice() + "|" +
+                    p.getQuantity() + "|" + p.getMaterial() + "|" + p.getLength();
+        } else if (obj instanceof Shirts) {
+            Shirts s = (Shirts) obj;
+            return "Shirts|" + s.getName() + "|" + s.getSize() + "|" + s.getPrice() + "|" +
+                    s.getQuantity() + "|" + s.getMaterial() + "|" + s.getSleeveType();
+        } else if (obj instanceof Jacket) {
+            Jacket j = (Jacket) obj;
+            return "Jacket|" + j.getName() + "|" + j.getSize() + "|" + j.getPrice() + "|" +
+                    j.getQuantity() + "|" + j.getMaterial() + "|" + j.getSeason() + "|" + j.isHasHood();
+        } else if (obj instanceof Shoes) {
+            Shoes sh = (Shoes) obj;
+            return "Shoes|" + sh.getName() + "|" + sh.getSize() + "|" + sh.getPrice() + "|" +
+                    sh.getQuantity() + "|" + sh.getMaterial() + "|" + sh.getShoeSize() + "|" + sh.getShoeType();
+        } else {
+            return "Clothes|" + obj.getName() + "|" + obj.getSize() + "|" + obj.getPrice() + "|" +
+                    obj.getQuantity() + "|" + obj.getMaterial();
+        }
+    }
+
+    private static Clothes parseObject(String line) {
+        String[] parts = line.split("\\|");
+        if (parts.length < 6) return null;
+
+        String type = parts[0];
+        String name = parts[1];
+        String size = parts[2];
+        double price = Double.parseDouble(parts[3]);
+        int quantity = Integer.parseInt(parts[4]);
+        String material = parts[5];
+
+        try {
+            switch (type) {
+                case "Clothes":
+                    return new Clothes(name, size, price, quantity, material);
+                case "Pants":
+                    if (parts.length >= 7) {
+                        return new Pants(name, size, price, quantity, material, parts[6]);
+                    }
+                    break;
+                case "Shirts":
+                    if (parts.length >= 7) {
+                        return new Shirts(name, size, price, quantity, material, parts[6]);
+                    }
+                    break;
+                case "Jacket":
+                    if (parts.length >= 8) {
+                        boolean hasHood = Boolean.parseBoolean(parts[7]);
+                        return new Jacket(name, size, price, quantity, material, parts[6], hasHood);
+                    }
+                    break;
+                case "Shoes":
+                    if (parts.length >= 8) {
+                        int shoeSize = Integer.parseInt(parts[6]);
+                        return new Shoes(name, size, price, quantity, material, shoeSize, parts[7]);
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Помилка парсингу рядка: " + line);
+        }
+        return null;
+    }
+
+    // ========== ІНШІ МЕТОДИ (без змін) ==========
 
     private static void createObjectMenu() {
         System.out.println("\n--- Виберiть тип об'єкта ---");
