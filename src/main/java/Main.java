@@ -3,10 +3,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Драйвер-клас з консольним меню та роботою з файлами.
+ * Драйвер-клас з консольним меню, роботою з файлами та пошуком.
  *
  * @author Lobanov
- * @version 6.0
+ * @version 7.0
  */
 public class Main {
     private static ArrayList<Clothes> clothesList = new ArrayList<>();
@@ -14,14 +14,14 @@ public class Main {
     private static final String FILE_NAME = "input.txt";
 
     public static void main(String[] args) {
-        // Завантаження даних з файлу при запуску
         loadFromFile();
 
         while (true) {
             System.out.println("\n=== МЕНЮ ===");
             System.out.println("1. Створити новий об'єкт");
             System.out.println("2. Вивести всі об'єкти");
-            System.out.println("3. Завершити роботу");
+            System.out.println("3. Пошук об'єкта");
+            System.out.println("4. Завершити роботу");
             System.out.print("Виберiть опцiю: ");
 
             int choice = readInt();
@@ -34,6 +34,9 @@ public class Main {
                     printAllObjects();
                     break;
                 case 3:
+                    searchMenu();
+                    break;
+                case 4:
                     saveToFile();
                     System.out.println("Дані збережено у файл " + FILE_NAME);
                     System.out.println("До побачення!");
@@ -45,12 +48,98 @@ public class Main {
         }
     }
 
+    // ========== ПОШУК ==========
+
+    private static void searchMenu() {
+        while (true) {
+            System.out.println("\n--- Пошук об'єкта ---");
+            System.out.println("1. Пошук за назвою");
+            System.out.println("2. Пошук за ціною (не більше заданої)");
+            System.out.println("3. Пошук за розміром");
+            System.out.println("0. Повернутися до головного меню");
+            System.out.print("Ваш вибiр: ");
+
+            int choice = readInt();
+
+            switch (choice) {
+                case 1:
+                    searchByName();
+                    break;
+                case 2:
+                    searchByMaxPrice();
+                    break;
+                case 3:
+                    searchBySize();
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Некоректний вибiр.");
+            }
+        }
+    }
+
+    // Пошук за назвою
+    private static void searchByName() {
+        System.out.print("Введiть назву для пошуку: ");
+        String name = scanner.nextLine().toLowerCase();
+
+        ArrayList<Clothes> results = new ArrayList<>();
+        for (Clothes item : clothesList) {
+            if (item.getName().toLowerCase().contains(name)) {
+                results.add(item);
+            }
+        }
+
+        printSearchResults(results, "назвою \"" + name + "\"");
+    }
+
+    // Пошук за ціною (не більше заданої)
+    private static void searchByMaxPrice() {
+        double maxPrice = readDouble("Введiть максимальну цiну: ");
+
+        ArrayList<Clothes> results = new ArrayList<>();
+        for (Clothes item : clothesList) {
+            if (item.getPrice() <= maxPrice) {
+                results.add(item);
+            }
+        }
+
+        printSearchResults(results, "цiною не бiльше " + maxPrice);
+    }
+
+    // Пошук за розміром
+    private static void searchBySize() {
+        String size = readSize();
+
+        ArrayList<Clothes> results = new ArrayList<>();
+        for (Clothes item : clothesList) {
+            if (item.getSize().equalsIgnoreCase(size)) {
+                results.add(item);
+            }
+        }
+
+        printSearchResults(results, "розмiром " + size.toUpperCase());
+    }
+
+    // Виведення результатів пошуку
+    private static void printSearchResults(ArrayList<Clothes> results, String criteria) {
+        if (results.isEmpty()) {
+            System.out.println("Об'єктiв за критерiєм \"" + criteria + "\" не знайдено.");
+        } else {
+            System.out.println("\nЗнайдено " + results.size() + " об'єкт(ів) за критерiєм \"" + criteria + "\":");
+            for (int i = 0; i < results.size(); i++) {
+                System.out.println((i + 1) + ". " + results.get(i));
+            }
+        }
+    }
+
     // ========== РОБОТА З ФАЙЛОМ ==========
 
     private static void loadFromFile() {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
-            System.out.println("Файл " + FILE_NAME + " не знайдено. Починаємо з порожнім списком.");
+            System.out.println("Файл " + FILE_NAME + " не знайдено. Починаємо з порожнiм списком.");
             return;
         }
 
@@ -84,7 +173,6 @@ public class Main {
     }
 
     private static String objectToString(Clothes obj) {
-        // Формат: Тип|Назва|Розмір|Ціна|Кількість|Матеріал|...(додаткові поля)
         if (obj instanceof Pants) {
             Pants p = (Pants) obj;
             return "Pants|" + p.getName() + "|" + p.getSize() + "|" + p.getPrice() + "|" +
@@ -151,7 +239,7 @@ public class Main {
         return null;
     }
 
-    // ========== ІНШІ МЕТОДИ (без змін) ==========
+    // ========== МЕТОДИ СТВОРЕННЯ ОБ'ЄКТІВ ==========
 
     private static void createObjectMenu() {
         System.out.println("\n--- Виберiть тип об'єкта ---");
