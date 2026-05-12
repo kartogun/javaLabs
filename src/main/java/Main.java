@@ -60,24 +60,16 @@ public class Main {
             int choice = readInt();
 
             switch (choice) {
-                case 1:
-                    sortByName();
-                    return;
-                case 2:
-                    sortByPrice();
-                    return;
-                case 3:
-                    sortByQuantity();
-                    return;
-                case 0:
-                    return;
-                default:
-                    System.out.println("Некоректний вибiр.");
+                case 1: sortByName(); return;
+                case 2: sortByPrice(); return;
+                case 3: sortByQuantity(); return;
+                case 0: return;
+                default: System.out.println("Некоректний вибiр.");
             }
         }
     }
 
-    // Сортування за назвою (зростання)
+    // Сортування за назвою - ЛЯМБДА
     private static void sortByName() {
         ArrayList<Clothes> list = store.getClothesList();
         if (list.isEmpty()) {
@@ -85,12 +77,7 @@ public class Main {
             return;
         }
 
-        Comparator<Clothes> cmp = new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-        };
+        Comparator<Clothes> cmp = (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName());
 
         ArrayList<Clothes> sorted = new ArrayList<>(list);
         Collections.sort(sorted, cmp);
@@ -101,7 +88,7 @@ public class Main {
         }
     }
 
-    // Сортування за ціною (від дешевших до дорожчих)
+    // Сортування за ціною - ЛЯМБДА
     private static void sortByPrice() {
         ArrayList<Clothes> list = store.getClothesList();
         if (list.isEmpty()) {
@@ -109,14 +96,7 @@ public class Main {
             return;
         }
 
-        Comparator<Clothes> cmp = new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                if (o1.getPrice() < o2.getPrice()) return -1;
-                if (o1.getPrice() > o2.getPrice()) return 1;
-                return 0;
-            }
-        };
+        Comparator<Clothes> cmp = (o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice());
 
         ArrayList<Clothes> sorted = new ArrayList<>(list);
         Collections.sort(sorted, cmp);
@@ -127,7 +107,7 @@ public class Main {
         }
     }
 
-    // Сортування за кількістю (від меншої до більшої)
+    // Сортування за кількістю - ЛЯМБДА
     private static void sortByQuantity() {
         ArrayList<Clothes> list = store.getClothesList();
         if (list.isEmpty()) {
@@ -135,14 +115,7 @@ public class Main {
             return;
         }
 
-        Comparator<Clothes> cmp = new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                if (o1.getQuantity() < o2.getQuantity()) return -1;
-                if (o1.getQuantity() > o2.getQuantity()) return 1;
-                return 0;
-            }
-        };
+        Comparator<Clothes> cmp = (o1, o2) -> Integer.compare(o1.getQuantity(), o2.getQuantity());
 
         ArrayList<Clothes> sorted = new ArrayList<>(list);
         Collections.sort(sorted, cmp);
@@ -153,7 +126,7 @@ public class Main {
         }
     }
 
-    // ========== ІНШІ МЕТОДИ (без змін) ==========
+    // ========== ЗАВАНТАЖЕННЯ ТА ЗБЕРЕЖЕННЯ ==========
 
     private static void loadStoreFromFile() {
         File file = new File(FILE_NAME);
@@ -236,24 +209,7 @@ public class Main {
         }
     }
 
-    private static void createObjectMenu() {
-        System.out.println("\n--- Тип об'єкта ---");
-        System.out.println("1. Одяг");
-        System.out.println("2. Штани");
-        System.out.println("3. Сорочка");
-        System.out.println("4. Куртка");
-        System.out.println("5. Взуття");
-        System.out.println("0. Назад");
-        int type = readInt();
-        switch (type) {
-            case 1: createClothes(); break;
-            case 2: createPants(); break;
-            case 3: createShirts(); break;
-            case 4: createJacket(); break;
-            case 5: createShoes(); break;
-            case 0: return;
-        }
-    }
+    // ========== МЕТОДИ ПОШУКУ ==========
 
     private static void searchMenu() {
         while (true) {
@@ -299,57 +255,24 @@ public class Main {
         }
     }
 
-    private static void printAllObjects() {
-        ArrayList<Clothes> list = store.getClothesList();
-        if (list.isEmpty()) {
-            System.out.println("Список порожнiй");
-            return;
-        }
-        System.out.println("\n=== ВСІ ТОВАРИ ===");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println((i + 1) + ". " + list.get(i));
-        }
-    }
+    // ========== МЕТОДИ СТВОРЕННЯ ОБ'ЄКТІВ ==========
 
-    private static int readInt() {
-        while (true) {
-            try { return Integer.parseInt(scanner.nextLine()); }
-            catch (NumberFormatException e) { System.out.print("Введiть число: "); }
-        }
-    }
-
-    private static double readDouble() {
-        while (true) {
-            try { return Double.parseDouble(scanner.nextLine()); }
-            catch (NumberFormatException e) { System.out.print("Введiть число: "); }
-        }
-    }
-
-    private static String readString(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine();
-            if (!input.trim().isEmpty()) return input;
-            System.out.println("Не може бути порожнiм!");
-        }
-    }
-
-    private static String readSize() {
-        while (true) {
-            System.out.print("Розмiр (S/M/L/XL): ");
-            String input = scanner.nextLine().toUpperCase();
-            if (input.equals("S") || input.equals("M") || input.equals("L") || input.equals("XL")) return input;
-            System.out.println("Некоректний розмiр");
-        }
-    }
-
-    private static boolean readBoolean(String prompt) {
-        while (true) {
-            System.out.print(prompt + " (так/ні): ");
-            String input = scanner.nextLine().toLowerCase();
-            if (input.equals("так")) return true;
-            if (input.equals("ні")) return false;
-            System.out.println("Введiть так або нi");
+    private static void createObjectMenu() {
+        System.out.println("\n--- Тип об'єкта ---");
+        System.out.println("1. Одяг");
+        System.out.println("2. Штани");
+        System.out.println("3. Сорочка");
+        System.out.println("4. Куртка");
+        System.out.println("5. Взуття");
+        System.out.println("0. Назад");
+        int type = readInt();
+        switch (type) {
+            case 1: createClothes(); break;
+            case 2: createPants(); break;
+            case 3: createShirts(); break;
+            case 4: createJacket(); break;
+            case 5: createShoes(); break;
+            case 0: return;
         }
     }
 
@@ -402,5 +325,61 @@ public class Main {
         String shoeType = readString("Тип (кросівки/черевики/туфлі): ");
         int quantity = readInt();
         store.addNewClothes(new Shoes(name, size, price, quantity, material, shoeSize, shoeType), quantity);
+    }
+
+    private static void printAllObjects() {
+        ArrayList<Clothes> list = store.getClothesList();
+        if (list.isEmpty()) {
+            System.out.println("Список порожнiй");
+            return;
+        }
+        System.out.println("\n=== ВСІ ТОВАРИ ===");
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println((i + 1) + ". " + list.get(i));
+        }
+    }
+
+    // ========== ДОПОМІЖНІ МЕТОДИ ==========
+
+    private static int readInt() {
+        while (true) {
+            try { return Integer.parseInt(scanner.nextLine()); }
+            catch (NumberFormatException e) { System.out.print("Введiть число: "); }
+        }
+    }
+
+    private static double readDouble() {
+        while (true) {
+            try { return Double.parseDouble(scanner.nextLine()); }
+            catch (NumberFormatException e) { System.out.print("Введiть число: "); }
+        }
+    }
+
+    private static String readString(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine();
+            if (!input.trim().isEmpty()) return input;
+            System.out.println("Не може бути порожнiм!");
+        }
+    }
+
+    private static String readSize() {
+        while (true) {
+            System.out.print("Розмiр (S/M/L/XL): ");
+            String input = scanner.nextLine().toUpperCase();
+            if (input.equals("S") || input.equals("M") || input.equals("L") || input.equals("XL")) return input;
+            System.out.println("Некоректний розмiр");
+        }
+    }
+
+    private static boolean readBoolean(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (так/ні): ");
+            String input = scanner.nextLine().toLowerCase();
+            if (input.equals("так")) return true;
+            if (input.equals("ні")) return false;
+            System.out.println("Введiть так або нi");
+        }
     }
 }
