@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Main {
@@ -21,7 +23,7 @@ public class Main {
             System.out.println("1. Створити новий об'єкт");
             System.out.println("2. Вивести всі об'єкти");
             System.out.println("3. Пошук об'єкта");
-            System.out.println("4. Вивести відсортовані об'єкти (за назвою)");
+            System.out.println("4. Вивести відсортовані об'єкти");
             System.out.println("5. Інформація про магазин");
             System.out.println("6. Завершити роботу");
             System.out.print("Виберiть опцiю: ");
@@ -32,7 +34,7 @@ public class Main {
                 case 1: createObjectMenu(); break;
                 case 2: printAllObjects(); break;
                 case 3: searchMenu(); break;
-                case 4: printSortedObjects(); break;
+                case 4: sortMenu(); break;
                 case 5: System.out.println(store); break;
                 case 6:
                     saveStoreToFile();
@@ -44,17 +46,114 @@ public class Main {
         }
     }
 
-    private static void printSortedObjects() {
-        ArrayList<Clothes> sorted = store.getSortedList();
-        if (sorted.isEmpty()) {
+    // ========== МЕНЮ СОРТУВАННЯ ==========
+
+    private static void sortMenu() {
+        while (true) {
+            System.out.println("\n--- Виберiть критерiй сортування ---");
+            System.out.println("1. За назвою (за зростанням)");
+            System.out.println("2. За цiною (вiд дешевших до дорожчих)");
+            System.out.println("3. За кiлькiстю (вiд меншої до бiльшої)");
+            System.out.println("0. Повернутися до головного меню");
+            System.out.print("Ваш вибiр: ");
+
+            int choice = readInt();
+
+            switch (choice) {
+                case 1:
+                    sortByName();
+                    return;
+                case 2:
+                    sortByPrice();
+                    return;
+                case 3:
+                    sortByQuantity();
+                    return;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Некоректний вибiр.");
+            }
+        }
+    }
+
+    // Сортування за назвою (зростання)
+    private static void sortByName() {
+        ArrayList<Clothes> list = store.getClothesList();
+        if (list.isEmpty()) {
             System.out.println("Список порожнiй.");
             return;
         }
-        System.out.println("\n=== ВІДСОРТОВАНІ ТОВАРИ (за назвою) ===");
+
+        Comparator<Clothes> cmp = new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        };
+
+        ArrayList<Clothes> sorted = new ArrayList<>(list);
+        Collections.sort(sorted, cmp);
+
+        System.out.println("\n=== ВІДСОРТОВАНО ЗА НАЗВОЮ ===");
         for (int i = 0; i < sorted.size(); i++) {
             System.out.println((i + 1) + ". " + sorted.get(i));
         }
     }
+
+    // Сортування за ціною (від дешевших до дорожчих)
+    private static void sortByPrice() {
+        ArrayList<Clothes> list = store.getClothesList();
+        if (list.isEmpty()) {
+            System.out.println("Список порожнiй.");
+            return;
+        }
+
+        Comparator<Clothes> cmp = new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                if (o1.getPrice() < o2.getPrice()) return -1;
+                if (o1.getPrice() > o2.getPrice()) return 1;
+                return 0;
+            }
+        };
+
+        ArrayList<Clothes> sorted = new ArrayList<>(list);
+        Collections.sort(sorted, cmp);
+
+        System.out.println("\n=== ВІДСОРТОВАНО ЗА ЦІНОЮ (від дешевших) ===");
+        for (int i = 0; i < sorted.size(); i++) {
+            System.out.println((i + 1) + ". " + sorted.get(i));
+        }
+    }
+
+    // Сортування за кількістю (від меншої до більшої)
+    private static void sortByQuantity() {
+        ArrayList<Clothes> list = store.getClothesList();
+        if (list.isEmpty()) {
+            System.out.println("Список порожнiй.");
+            return;
+        }
+
+        Comparator<Clothes> cmp = new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                if (o1.getQuantity() < o2.getQuantity()) return -1;
+                if (o1.getQuantity() > o2.getQuantity()) return 1;
+                return 0;
+            }
+        };
+
+        ArrayList<Clothes> sorted = new ArrayList<>(list);
+        Collections.sort(sorted, cmp);
+
+        System.out.println("\n=== ВІДСОРТОВАНО ЗА КІЛЬКІСТЮ (від меншої) ===");
+        for (int i = 0; i < sorted.size(); i++) {
+            System.out.println((i + 1) + ". " + sorted.get(i));
+        }
+    }
+
+    // ========== ІНШІ МЕТОДИ (без змін) ==========
 
     private static void loadStoreFromFile() {
         File file = new File(FILE_NAME);
