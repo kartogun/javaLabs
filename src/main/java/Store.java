@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.UUID;
 
 public class Store {
@@ -34,6 +35,32 @@ public class Store {
         cl.setQuantity(quantity);
         clothesList.add(cl);
     }
+
+    // ========== UPDATE ==========
+
+    public boolean update(Clothes existingObject, Clothes newObject) {
+        for (int i = 0; i < clothesList.size(); i++) {
+            if (clothesList.get(i).getUuid().equals(existingObject.getUuid())) {
+                clothesList.set(i, newObject);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ========== DELETE ==========
+
+    public boolean delete(Clothes existingObject) {
+        for (int i = 0; i < clothesList.size(); i++) {
+            if (clothesList.get(i).getUuid().equals(existingObject.getUuid())) {
+                clothesList.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ========== ПОШУК ==========
 
     public Clothes findByUuid(UUID uuid) {
         for (Clothes item : clothesList) {
