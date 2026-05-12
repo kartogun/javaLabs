@@ -1,4 +1,7 @@
-public abstract class Clothes implements Comparable<Clothes> {
+import java.util.UUID;
+
+public abstract class Clothes implements Comparable<Clothes>, Identifiable {
+    protected UUID uuid;
     protected String name;
     protected String size;
     protected double price;
@@ -6,11 +9,16 @@ public abstract class Clothes implements Comparable<Clothes> {
     protected String material;
 
     public Clothes(String name, String size, double price, int quantity, String material) {
+        this.uuid = UUID.randomUUID();
         setName(name);
         setSize(size);
         setPrice(price);
         setQuantity(quantity);
         setMaterial(material);
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public String getName() { return name; }
@@ -59,8 +67,12 @@ public abstract class Clothes implements Comparable<Clothes> {
         return this.name.compareToIgnoreCase(other.name);
     }
 
+    public String getShortInfo() {
+        return name + " | UUID: " + uuid.toString().substring(0, 8) + "...";
+    }
+
     @Override
     public String toString() {
-        return name + ", Розмiр: " + size + ", Цiна: " + price + " грн, Кiлькiсть: " + quantity + ", Матерiал: " + material;
+        return "UUID: " + uuid + ", " + name + ", Розмiр: " + size + ", Цiна: " + price + " грн, Кiлькiсть: " + quantity + ", Матерiал: " + material;
     }
 }

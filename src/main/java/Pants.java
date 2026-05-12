@@ -17,6 +17,6 @@ public class Pants extends Clothes {
 
     @Override
     public String toString() {
-        return "Штани: " + super.toString() + ", Довжина: " + length;
+        return super.toString() + ", Довжина: " + length;
     }
 }

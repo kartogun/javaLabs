@@ -17,6 +17,6 @@ public class Shirts extends Clothes {
 
     @Override
     public String toString() {
-        return "Сорочка: " + super.toString() + ", Рукав: " + sleeveType;
+        return super.toString() + ", Рукав: " + sleeveType;
     }
 }

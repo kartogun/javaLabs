@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
     private static Store store;
@@ -25,7 +26,8 @@ public class Main {
             System.out.println("3. Пошук об'єкта");
             System.out.println("4. Вивести відсортовані об'єкти");
             System.out.println("5. Інформація про магазин");
-            System.out.println("6. Завершити роботу");
+            System.out.println("6. Пошук за UUID");
+            System.out.println("7. Завершити роботу");
             System.out.print("Виберiть опцiю: ");
 
             int choice = readInt();
@@ -36,13 +38,34 @@ public class Main {
                 case 3: searchMenu(); break;
                 case 4: sortMenu(); break;
                 case 5: System.out.println(store); break;
-                case 6:
+                case 6: searchByUuid(); break;
+                case 7:
                     saveStoreToFile();
                     System.out.println("До побачення!");
                     scanner.close();
                     return;
                 default: System.out.println("Некоректний вибiр.");
             }
+        }
+    }
+
+    // ========== ПОШУК ЗА UUID ==========
+
+    private static void searchByUuid() {
+        System.out.print("Введiть UUID для пошуку: ");
+        String uuidStr = scanner.nextLine();
+        try {
+            UUID uuid = UUID.fromString(uuidStr);
+            Clothes found = store.findByUuid(uuid);
+            if (found != null) {
+                System.out.println("\n=== ЗНАЙДЕНО ОБ'ЄКТ ===");
+                System.out.println(found);
+            } else {
+                System.out.println("Об'єкт з таким UUID не знайдено.");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: Некоректний формат UUID!");
+            System.out.println("UUID має виглядати так: 123e4567-e89b-12d3-a456-426614174000");
         }
     }
 
@@ -69,7 +92,6 @@ public class Main {
         }
     }
 
-    // Сортування за назвою - ЛЯМБДА
     private static void sortByName() {
         ArrayList<Clothes> list = store.getClothesList();
         if (list.isEmpty()) {
@@ -88,7 +110,6 @@ public class Main {
         }
     }
 
-    // Сортування за ціною - ЛЯМБДА
     private static void sortByPrice() {
         ArrayList<Clothes> list = store.getClothesList();
         if (list.isEmpty()) {
@@ -107,7 +128,6 @@ public class Main {
         }
     }
 
-    // Сортування за кількістю - ЛЯМБДА
     private static void sortByQuantity() {
         ArrayList<Clothes> list = store.getClothesList();
         if (list.isEmpty()) {

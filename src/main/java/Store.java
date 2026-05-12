@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 public class Store {
     private String storeName;
@@ -32,6 +33,15 @@ public class Store {
         }
         cl.setQuantity(quantity);
         clothesList.add(cl);
+    }
+
+    public Clothes findByUuid(UUID uuid) {
+        for (Clothes item : clothesList) {
+            if (item.getUuid().equals(uuid)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public ArrayList<Clothes> getSortedList() {

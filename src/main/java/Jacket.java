@@ -20,6 +20,6 @@ public class Jacket extends Clothes {
 
     @Override
     public String toString() {
-        return "Куртка: " + super.toString() + ", Сезон: " + season + ", Капюшон: " + (hasHood ? "так" : "ні");
+        return super.toString() + ", Сезон: " + season + ", Капюшон: " + (hasHood ? "так" : "ні");
     }
 }

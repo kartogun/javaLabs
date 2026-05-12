@@ -27,6 +27,6 @@ public class Shoes extends Clothes {
 
     @Override
     public String toString() {
-        return "Взуття: " + super.toString() + ", Розмір взуття: " + shoeSize + ", Тип: " + shoeType;
+        return super.toString() + ", Розмір взуття: " + shoeSize + ", Тип: " + shoeType;
     }
 }
