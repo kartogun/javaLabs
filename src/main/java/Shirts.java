@@ -1,8 +1,5 @@
-/**
- * Клас для представлення сорочок (похідний від Clothes).
- */
 public class Shirts extends Clothes {
-    private String sleeveType; // тип рукава: короткий, довгий
+    private String sleeveType;
 
     public Shirts(String name, String size, double price, int quantity, String material, String sleeveType) {
         super(name, size, price, quantity, material);

@@ -1,17 +1,10 @@
-/**
- * Базовий клас для представлення одягу.
- *
- * @author Lobanov
- * @version 4.0
- */
-public class Clothes {
+public abstract class Clothes implements Comparable<Clothes> {
     protected String name;
     protected String size;
     protected double price;
     protected int quantity;
     protected String material;
 
-    // Конструктор
     public Clothes(String name, String size, double price, int quantity, String material) {
         setName(name);
         setSize(size);
@@ -20,14 +13,12 @@ public class Clothes {
         setMaterial(material);
     }
 
-    // Гетери
     public String getName() { return name; }
     public String getSize() { return size; }
     public double getPrice() { return price; }
     public int getQuantity() { return quantity; }
     public String getMaterial() { return material; }
 
-    // Сетери з перевірками
     public void setName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Назва не може бути порожньою");
@@ -61,6 +52,11 @@ public class Clothes {
             throw new IllegalArgumentException("Матеріал не може бути порожнім");
         }
         this.material = material;
+    }
+
+    @Override
+    public int compareTo(Clothes other) {
+        return this.name.compareToIgnoreCase(other.name);
     }
 
     @Override

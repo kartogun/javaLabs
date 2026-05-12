@@ -1,12 +1,8 @@
-/**
- * Клас для представлення взуття (похідний від Clothes).
- */
 public class Shoes extends Clothes {
-    private int shoeSize; // розмір взуття (36-46)
-    private String shoeType; // тип: кросівки, черевики, туфлі
+    private int shoeSize;
+    private String shoeType;
 
-    public Shoes(String name, String size, double price, int quantity, String material,
-                 int shoeSize, String shoeType) {
+    public Shoes(String name, String size, double price, int quantity, String material, int shoeSize, String shoeType) {
         super(name, size, price, quantity, material);
         setShoeSize(shoeSize);
         setShoeType(shoeType);

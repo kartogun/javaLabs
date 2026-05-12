@@ -1,12 +1,8 @@
-/**
- * Клас для представлення куртки (похідний від Clothes).
- */
 public class Jacket extends Clothes {
-    private String season; // сезон: зимова, осіння, літня
-    private boolean hasHood; // наявність капюшона
+    private String season;
+    private boolean hasHood;
 
-    public Jacket(String name, String size, double price, int quantity, String material,
-                  String season, boolean hasHood) {
+    public Jacket(String name, String size, double price, int quantity, String material, String season, boolean hasHood) {
         super(name, size, price, quantity, material);
         setSeason(season);
         this.hasHood = hasHood;
@@ -20,10 +16,6 @@ public class Jacket extends Clothes {
             throw new IllegalArgumentException("Сезон має бути: зимова, осіння, літня");
         }
         this.season = season;
-    }
-
-    public void setHasHood(boolean hasHood) {
-        this.hasHood = hasHood;
     }
 
     @Override

@@ -1,8 +1,5 @@
-/**
- * Клас для представлення штанів (похідний від Clothes).
- */
 public class Pants extends Clothes {
-    private String length; // довжина: короткі, довгі
+    private String length;
 
     public Pants(String name, String size, double price, int quantity, String material, String length) {
         super(name, size, price, quantity, material);

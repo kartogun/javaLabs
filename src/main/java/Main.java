@@ -8,21 +8,8 @@ public class Main {
     private static Store store;
     private static Scanner scanner = new Scanner(System.in);
     private static final String FILE_NAME = "input.txt";
-    private static DatabaseManager dbManager;
 
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.out.println("Вкажіть шлях до конфігураційного файлу!");
-            System.out.println("Приклад: java Main db.properties");
-            return;
-        }
-
-        try {
-            dbManager = new DatabaseManager(args[0]);
-        } catch (Exception e) {
-            System.out.println("Помилка підключення до БД: " + e.getMessage());
-        }
-
         loadStoreFromFile();
 
         if (store == null) {
@@ -34,7 +21,7 @@ public class Main {
             System.out.println("1. Створити новий об'єкт");
             System.out.println("2. Вивести всі об'єкти");
             System.out.println("3. Пошук об'єкта");
-            System.out.println("4. Додати товар (за кількістю)");
+            System.out.println("4. Вивести відсортовані об'єкти (за назвою)");
             System.out.println("5. Інформація про магазин");
             System.out.println("6. Завершити роботу");
             System.out.print("Виберiть опцiю: ");
@@ -45,16 +32,27 @@ public class Main {
                 case 1: createObjectMenu(); break;
                 case 2: printAllObjects(); break;
                 case 3: searchMenu(); break;
-                case 4: addExistingProduct(); break;
+                case 4: printSortedObjects(); break;
                 case 5: System.out.println(store); break;
                 case 6:
                     saveStoreToFile();
-                    if (dbManager != null) dbManager.close();
                     System.out.println("До побачення!");
                     scanner.close();
                     return;
                 default: System.out.println("Некоректний вибiр.");
             }
+        }
+    }
+
+    private static void printSortedObjects() {
+        ArrayList<Clothes> sorted = store.getSortedList();
+        if (sorted.isEmpty()) {
+            System.out.println("Список порожнiй.");
+            return;
+        }
+        System.out.println("\n=== ВІДСОРТОВАНІ ТОВАРИ (за назвою) ===");
+        for (int i = 0; i < sorted.size(); i++) {
+            System.out.println((i + 1) + ". " + sorted.get(i));
         }
     }
 
@@ -97,7 +95,7 @@ public class Main {
 
         try {
             switch (type) {
-                case "Clothes": return new Clothes(name, size, price, quantity, material);
+                case "Clothes": return new Clothes(name, size, price, quantity, material) {};
                 case "Pants": return new Pants(name, size, price, quantity, material, parts[5]);
                 case "Shirts": return new Shirts(name, size, price, quantity, material, parts[5]);
                 case "Jacket": return new Jacket(name, size, price, quantity, material, parts[5], Boolean.parseBoolean(parts[6]));
@@ -139,17 +137,22 @@ public class Main {
         }
     }
 
-    private static void addExistingProduct() {
-        if (store.getClothesList().isEmpty()) {
-            System.out.println("Список порожнiй");
-            return;
-        }
-        printAllObjects();
-        System.out.print("Виберiть номер: ");
-        int index = readInt() - 1;
-        if (index >= 0 && index < store.getClothesList().size()) {
-            int quantity = readInt("Введiть кiлькiсть: ");
-            store.addNewClothes(store.getClothesList().get(index), quantity);
+    private static void createObjectMenu() {
+        System.out.println("\n--- Тип об'єкта ---");
+        System.out.println("1. Одяг");
+        System.out.println("2. Штани");
+        System.out.println("3. Сорочка");
+        System.out.println("4. Куртка");
+        System.out.println("5. Взуття");
+        System.out.println("0. Назад");
+        int type = readInt();
+        switch (type) {
+            case 1: createClothes(); break;
+            case 2: createPants(); break;
+            case 3: createShirts(); break;
+            case 4: createJacket(); break;
+            case 5: createShoes(); break;
+            case 0: return;
         }
     }
 
@@ -173,13 +176,12 @@ public class Main {
 
     private static void searchByName() {
         System.out.print("Введiть назву: ");
-        ArrayList<Clothes> results = store.searchByName(scanner.nextLine());
-        printResults(results, "назвою");
+        printResults(store.searchByName(scanner.nextLine()), "назвою");
     }
 
     private static void searchByMaxPrice() {
-        double price = readDouble("Введiть макс. цiну: ");
-        printResults(store.searchByMaxPrice(price), "цiною");
+        System.out.print("Введiть макс. цiну: ");
+        printResults(store.searchByMaxPrice(readDouble()), "цiною");
     }
 
     private static void searchBySize() {
@@ -193,27 +195,20 @@ public class Main {
         } else {
             System.out.println("Знайдено " + results.size() + " об'єкт(ів):");
             for (int i = 0; i < results.size(); i++) {
-                System.out.println((i+1) + ". " + results.get(i));
+                System.out.println((i + 1) + ". " + results.get(i));
             }
         }
     }
 
-    private static void createObjectMenu() {
-        System.out.println("\n--- Тип об'єкта ---");
-        System.out.println("1. Одяг");
-        System.out.println("2. Штани");
-        System.out.println("3. Сорочка");
-        System.out.println("4. Куртка");
-        System.out.println("5. Взуття");
-        System.out.println("0. Назад");
-        int type = readInt();
-        switch (type) {
-            case 1: createClothes(); break;
-            case 2: createPants(); break;
-            case 3: createShirts(); break;
-            case 4: createJacket(); break;
-            case 5: createShoes(); break;
-            case 0: return;
+    private static void printAllObjects() {
+        ArrayList<Clothes> list = store.getClothesList();
+        if (list.isEmpty()) {
+            System.out.println("Список порожнiй");
+            return;
+        }
+        System.out.println("\n=== ВСІ ТОВАРИ ===");
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println((i + 1) + ". " + list.get(i));
         }
     }
 
@@ -224,16 +219,10 @@ public class Main {
         }
     }
 
-    private static int readInt(String prompt) {
-        System.out.print(prompt);
-        return readInt();
-    }
-
-    private static double readDouble(String prompt) {
+    private static double readDouble() {
         while (true) {
-            System.out.print(prompt);
             try { return Double.parseDouble(scanner.nextLine()); }
-            catch (NumberFormatException e) { System.out.println("Введiть число!"); }
+            catch (NumberFormatException e) { System.out.print("Введiть число: "); }
         }
     }
 
@@ -268,73 +257,51 @@ public class Main {
     private static void createClothes() {
         String name = readString("Назва: ");
         String size = readSize();
-        double price = readDouble("Цiна: ");
+        double price = readDouble();
         String material = readString("Матерiал: ");
-        int quantity = readInt("Кiлькiсть: ");
-        Clothes c = new Clothes(name, size, price, quantity, material);
-        store.addNewClothes(c, quantity);
-        if (dbManager != null) dbManager.saveClothes(c);
+        int quantity = readInt();
+        store.addNewClothes(new Clothes(name, size, price, quantity, material) {}, quantity);
     }
 
     private static void createPants() {
         String name = readString("Назва: ");
         String size = readSize();
-        double price = readDouble("Цiна: ");
+        double price = readDouble();
         String material = readString("Матерiал: ");
         String length = readString("Довжина (короткі/довгі): ");
-        int quantity = readInt("Кiлькiсть: ");
-        Pants p = new Pants(name, size, price, quantity, material, length);
-        store.addNewClothes(p, quantity);
-        if (dbManager != null) dbManager.saveClothes(p);
+        int quantity = readInt();
+        store.addNewClothes(new Pants(name, size, price, quantity, material, length), quantity);
     }
 
     private static void createShirts() {
         String name = readString("Назва: ");
         String size = readSize();
-        double price = readDouble("Цiна: ");
+        double price = readDouble();
         String material = readString("Матерiал: ");
         String sleeve = readString("Рукав (короткий/довгий): ");
-        int quantity = readInt("Кiлькiсть: ");
-        Shirts s = new Shirts(name, size, price, quantity, material, sleeve);
-        store.addNewClothes(s, quantity);
-        if (dbManager != null) dbManager.saveClothes(s);
+        int quantity = readInt();
+        store.addNewClothes(new Shirts(name, size, price, quantity, material, sleeve), quantity);
     }
 
     private static void createJacket() {
         String name = readString("Назва: ");
         String size = readSize();
-        double price = readDouble("Цiна: ");
+        double price = readDouble();
         String material = readString("Матерiал: ");
         String season = readString("Сезон (зимова/осіння/літня): ");
         boolean hasHood = readBoolean("Капюшон");
-        int quantity = readInt("Кiлькiсть: ");
-        Jacket j = new Jacket(name, size, price, quantity, material, season, hasHood);
-        store.addNewClothes(j, quantity);
-        if (dbManager != null) dbManager.saveClothes(j);
+        int quantity = readInt();
+        store.addNewClothes(new Jacket(name, size, price, quantity, material, season, hasHood), quantity);
     }
 
     private static void createShoes() {
         String name = readString("Назва: ");
         String size = readSize();
-        double price = readDouble("Цiна: ");
+        double price = readDouble();
         String material = readString("Матерiал: ");
-        int shoeSize = readInt("Розмiр взуття (36-46): ");
+        int shoeSize = Integer.parseInt(readString("Розмiр взуття (36-46): "));
         String shoeType = readString("Тип (кросівки/черевики/туфлі): ");
-        int quantity = readInt("Кiлькiсть: ");
-        Shoes sh = new Shoes(name, size, price, quantity, material, shoeSize, shoeType);
-        store.addNewClothes(sh, quantity);
-        if (dbManager != null) dbManager.saveClothes(sh);
-    }
-
-    private static void printAllObjects() {
-        ArrayList<Clothes> list = store.getClothesList();
-        if (list.isEmpty()) {
-            System.out.println("Список порожнiй");
-            return;
-        }
-        System.out.println("\n=== ВСІ ТОВАРИ ===");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println((i+1) + ". " + list.get(i));
-        }
+        int quantity = readInt();
+        store.addNewClothes(new Shoes(name, size, price, quantity, material, shoeSize, shoeType), quantity);
     }
 }
